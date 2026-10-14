@@ -3,10 +3,10 @@
   "articulos_raw": 10000,
   "ventas_raw": 10000,
   "personas": 5014,
-  "articulos": 1067,
+  "articulos": 1055,
   "ventas": 478,
   "telefonos_nulos": 2496,
-  "articulos_duplicados": 3194,
+  "articulos_duplicados": 1697,
   "descartes_ventas": {
     "comprador_invalido_o_inexistente": 5039,
     "cantidad_no_confiable": 477,
