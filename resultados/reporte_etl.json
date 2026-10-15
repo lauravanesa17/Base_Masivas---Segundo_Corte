@@ -1,0 +1,20 @@
+{
+  "personas_recibidas": 10000,
+  "personas_limpias": 5014,
+  "personas_descartadas": 4986,
+  "telefonos_nulos": 2496,
+  "articulos_recibidos": 10000,
+  "articulos_limpios": 1055,
+  "articulos_descartados": 7248,
+  "articulos_duplicados": 1697,
+  "ventas_recibidas": 10000,
+  "ventas_integras": 478,
+  "ventas_duplicadas": 0,
+  "descartes_ventas": {
+    "comprador_invalido_o_inexistente": 5039,
+    "articulo_invalido_o_inexistente": 2035,
+    "cantidad_no_confiable": 2448,
+    "precio_no_confiable": 0,
+    "referencia_huerfana": 0
+  }
+}

@@ -1,136 +1,59 @@
-name: taller-bdm
+name: bdm-mojo
 
 services:
-  redis:
-    image: redis:7-alpine
-    container_name: bdm-redis
-    profiles: ["clave-valor"]
-    command: ["redis-server", "--appendonly", "yes"]
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis-data:/data
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 5s
-      timeout: 3s
-      retries: 20
-    restart: unless-stopped
-
-  postgres:
-    image: postgres:16-alpine
-    container_name: bdm-postgres
-    profiles: ["relacional"]
-    environment:
-      POSTGRES_USER: taller
-      POSTGRES_PASSWORD: taller
-      POSTGRES_DB: almacen
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U taller -d almacen"]
-      interval: 5s
-      timeout: 3s
-      retries: 20
-    restart: unless-stopped
-
-  mongo:
+  mongo_personas:
     image: mongo:7
-    container_name: bdm-mongo
-    profiles: ["documental"]
+    container_name: bdm-mongo-personas
     ports:
       - "27017:27017"
+    networks:
+      - bdm-red
     volumes:
-      - mongo-data:/data/db
+      - mongo_personas:/data/db
     healthcheck:
       test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
-      interval: 10s
+      interval: 5s
       timeout: 5s
-      retries: 20
+      retries: 30
     restart: unless-stopped
 
-  clickhouse:
-    image: clickhouse/clickhouse-server:24.8
-    container_name: bdm-clickhouse
-    profiles: ["columnar"]
-    environment:
-      CLICKHOUSE_DB: almacen
-      CLICKHOUSE_USER: taller
-      CLICKHOUSE_PASSWORD: taller
-      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: "1"
+  mongo_articulos:
+    image: mongo:7
+    container_name: bdm-mongo-articulos
     ports:
-      - "8123:8123"
+      - "27018:27017"
+    networks:
+      - bdm-red
     volumes:
-      - clickhouse-data:/var/lib/clickhouse
-    ulimits:
-      nofile:
-        soft: 262144
-        hard: 262144
+      - mongo_articulos:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
     restart: unless-stopped
 
-  neo4j:
-    image: neo4j:5
-    container_name: bdm-neo4j
-    profiles: ["grafos"]
-    environment:
-      NEO4J_AUTH: neo4j/tallerbdm
-      NEO4J_server_memory_heap_initial__size: 256m
-      NEO4J_server_memory_heap_max__size: 512m
-      NEO4J_server_memory_pagecache_size: 128m
+  mongo_ventas:
+    image: mongo:7
+    container_name: bdm-mongo-ventas
     ports:
-      - "7474:7474"
-      - "7687:7687"
+      - "27019:27017"
+    networks:
+      - bdm-red
     volumes:
-      - neo4j-data:/data
+      - mongo_ventas:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
     restart: unless-stopped
 
-  influxdb:
-    image: influxdb:2.7
-    container_name: bdm-influxdb
-    profiles: ["temporal"]
-    environment:
-      DOCKER_INFLUXDB_INIT_MODE: setup
-      DOCKER_INFLUXDB_INIT_USERNAME: admin
-      DOCKER_INFLUXDB_INIT_PASSWORD: adminadmin
-      DOCKER_INFLUXDB_INIT_ORG: taller
-      DOCKER_INFLUXDB_INIT_BUCKET: ventas
-      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: taller-token-bdm
-    ports:
-      - "8086:8086"
-    volumes:
-      - influx-data:/var/lib/influxdb2
-    restart: unless-stopped
-
-  cockroach:
-    image: cockroachdb/cockroach:v24.1.0
-    container_name: bdm-cockroach
-    profiles: ["newsql"]
-    command: ["start-single-node", "--insecure"]
-    ports:
-      - "26257:26257"
-      - "8088:8080"
-    volumes:
-      - cockroach-data:/cockroach/cockroach-data
-    restart: unless-stopped
-
-  qdrant:
-    image: qdrant/qdrant:v1.11.3
-    container_name: bdm-qdrant
-    profiles: ["vectorial"]
-    ports:
-      - "6333:6333"
-    volumes:
-      - qdrant-data:/qdrant/storage
-    restart: unless-stopped
+networks:
+  bdm-red:
+    name: bdm-red
 
 volumes:
-  redis-data:
-  postgres-data:
-  mongo-data:
-  clickhouse-data:
-  neo4j-data:
-  influx-data:
-  cockroach-data:
-  qdrant-data:
+  mongo_personas:
+  mongo_articulos:
+  mongo_ventas:
